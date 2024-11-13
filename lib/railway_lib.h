@@ -1,0 +1,139 @@
+#ifndef RAILWAY_LIB_H
+#define RAILWAY_LIB_H
+#include <iostream>
+#include <algorithm>
+#include <utility>
+#include <sstream>
+#include <vector>
+#include <memory>
+
+inline int MAX_LINES = 20;
+
+class Platform {
+private:
+    int platformID;
+    std::vector<std::pair<int, int>> schedule;
+
+public:
+    explicit Platform(const int platformID) : platformID(platformID) {
+        std::cout << "Platform added with id " << platformID << std::endl;
+    }
+
+    ~Platform() = default;
+
+    [[nodiscard]] int get_platform() const { return platformID; }
+
+    static bool haveIntersection(const std::pair<int, int>& a, const std::pair<int, int>& b) {
+        return std::max(a.first, b.first) <= std::min(a.second, b.second);
+    }
+
+    static void printError(const std::string& error_msg) {
+        std::cout << "\033[31mx~~~x " << error_msg << "\033[0m" << std::endl;
+    }
+
+    void addTrain(int time, bool isThroughTrain) {
+        int interval = isThroughTrain ? 10 : 30;
+        std::pair<int, int> newtrain_sched = std::make_pair(time, time + interval);
+        std::string extstr = isThroughTrain ? "through" : "stoppage";
+        for (const auto& sched : schedule) {
+            if(haveIntersection(newtrain_sched, sched)) {
+                std::stringstream errorStream;
+                errorStream << "Cannot add train at " << newtrain_sched.first << " which is a [" << extstr << "] train due to another train from " << sched.first << " to " << sched.second;
+                printError(errorStream.str());
+                return;
+            }
+        }
+        schedule.emplace_back(time, isThroughTrain ? time + 10 : time + 30); // Store 0 for through, 1 for stoppage
+        std::cout << "Added [" << extstr << "] train for [" << time << "] hrs on platform number [" << platformID << "]" << std::endl;
+
+        std::sort(schedule.begin(), schedule.end());
+    }
+};
+
+class Line {
+private:
+    std::string name;
+    std::weak_ptr<Platform> platform;
+
+public:
+    Line(std::string name, const std::shared_ptr<Platform> &pl) : name(std::move(name)), platform(pl) {
+        std::cout << "New Line [" << this->name << "] associated with platform [" << platform.lock()->get_platform() << "]" << std::endl;
+    }
+
+    [[nodiscard]] std::string getLineName() const { return name; }
+
+    ~Line() = default;
+};
+
+template<typename T>
+class Station {
+private:
+    T stationID;
+    int max_platforms;
+    std::vector<std::shared_ptr<Platform> > platforms;
+    std::vector<Line> lines;
+    int line_index = 0;
+
+public:
+    Station(T id, const int max_platforms) : stationID(id), max_platforms(max_platforms) {
+        std::cout << "Station added with id " << id << std::endl;
+    }
+
+    T get_station() {
+        return stationID;
+    }
+
+    void change_max_platforms(const int newSize) {
+        max_platforms = newSize;
+        std::cout << "Max platforms of " << get_station() << " changed to " << max_platforms << std::endl;
+    }
+
+    void addLineAndPlatform(const std::string &line_name, int platform_num) {
+        try {
+            if (platform_num >= max_platforms) {
+                // throw std::out_of_range("Platform number out of range");
+                std::cout << "x~~~x Platform number [" << platform_num << "] higher than maximum allowed platforms [" << max_platforms << "]" << std::endl;
+            } else if (platform_num <= 0) {
+                // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
+                std::cout << "x~~x Platform number [" << platform_num << "] cannot be negative" << std::endl;
+            } else {
+                // std::cout << "Adding Line [" << line_name << "] with Platform number [" << platform_num << "]" <<
+                        // std::endl;
+                const auto new_platform = std::make_shared<Platform>(platform_num);
+                platforms.push_back(new_platform);
+                this->lines.emplace_back(line_name, new_platform);
+            }
+        } catch (std::exception &e) {
+            std::cerr << "Error while trying to add line " << e.what() << std::endl;
+        }
+    }
+
+    void addTrain(int platform_no, int time, bool isThrough) {
+        try {
+            for (const auto& platform: platforms) {
+                if (platform->get_platform() == platform_no) {
+                    platform->addTrain(time, isThrough);
+                    return;
+                }
+            }
+            // throw std::out_of_range("Platform number out of range");
+            std::cout << "Platform [" << platform_no << "] does not exist on the station" << std::endl;
+        }
+        catch (std::exception &e) {
+            std::cerr << "Error while adding train : " << e.what() << std::endl;
+        }
+    }
+
+    void stationStats() {
+        std::cout << "---------------------------------------------" << std::endl;
+        std::cout << "Station Name: " << get_station() << std::endl;
+        std::cout << "Platforms: " << std::endl;
+        for (int i = 0; i < platforms.size(); ++i) {
+            const auto platform = platforms.at(i)->get_platform();
+            const auto line = lines.at(i).getLineName();
+            std::cout << platform << "\t" << line << std::endl;
+        }
+        std::cout << "---------------------------------------------" << std::endl;
+    }
+};
+#endif
