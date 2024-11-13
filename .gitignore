@@ -1,3 +1,6 @@
 .idea
 *.a
+*.o
+test_railway_debug
+test_railway_optimized
 /CMakeLists.txt
