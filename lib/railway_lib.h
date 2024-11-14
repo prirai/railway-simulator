@@ -12,7 +12,7 @@ inline int MAX_LINES = 20;
 class Platform {
 private:
     int platformID;
-    std::vector<std::pair<int, int>> schedule;
+    std::vector<std::pair<int, int> > schedule;
 
 public:
     explicit Platform(const int platformID) : platformID(platformID) {
@@ -23,11 +23,11 @@ public:
 
     [[nodiscard]] int get_platform() const { return platformID; }
 
-    static bool haveIntersection(const std::pair<int, int>& a, const std::pair<int, int>& b) {
+    static bool haveIntersection(const std::pair<int, int> &a, const std::pair<int, int> &b) {
         return std::max(a.first, b.first) <= std::min(a.second, b.second);
     }
 
-    static void printError(const std::string& error_msg) {
+    static void printError(const std::string &error_msg) {
         std::cout << "\033[31mx~~~x " << error_msg << "\033[0m" << std::endl;
     }
 
@@ -35,16 +35,18 @@ public:
         int interval = isThroughTrain ? 10 : 30;
         std::pair<int, int> newtrain_sched = std::make_pair(time, time + interval);
         std::string extstr = isThroughTrain ? "through" : "stoppage";
-        for (const auto& sched : schedule) {
-            if(haveIntersection(newtrain_sched, sched)) {
+        for (const auto &sched: schedule) {
+            if (haveIntersection(newtrain_sched, sched)) {
                 std::stringstream errorStream;
-                errorStream << "Cannot add train at " << newtrain_sched.first << " which is a [" << extstr << "] train due to another train from " << sched.first << " to " << sched.second;
+                errorStream << "Cannot add train at " << newtrain_sched.first << " which is a [" << extstr <<
+                        "] train due to another train from " << sched.first << " to " << sched.second;
                 printError(errorStream.str());
                 return;
             }
         }
         schedule.emplace_back(time, isThroughTrain ? time + 10 : time + 30); // Store 0 for through, 1 for stoppage
-        std::cout << "Added [" << extstr << "] train for [" << time << "] hrs on platform number [" << platformID << "]" << std::endl;
+        std::cout << "Added [" << extstr << "] train for [" << time << "] hrs on platform number [" << platformID << "]"
+                << std::endl;
 
         std::sort(schedule.begin(), schedule.end());
     }
@@ -57,7 +59,8 @@ private:
 
 public:
     Line(std::string name, const std::shared_ptr<Platform> &pl) : name(std::move(name)), platform(pl) {
-        std::cout << "New Line [" << this->name << "] associated with platform [" << platform.lock()->get_platform() << "]" << std::endl;
+        std::cout << "New Line [" << this->name << "] associated with platform [" << platform.lock()->get_platform() <<
+                "]" << std::endl;
     }
 
     [[nodiscard]] std::string getLineName() const { return name; }
@@ -65,8 +68,29 @@ public:
     ~Line() = default;
 };
 
+class StationBase {
+public:
+    virtual ~StationBase() = default;
+
+    virtual void addLineAndPlatform(const std::string &lineName, int platformNum) = 0;
+
+    virtual void addTrain(int platformNo, int time, bool isThrough) = 0;
+
+    virtual void stationStats() = 0;
+
+    virtual void changeMaxPlatforms(int newSize) = 0;
+
+    void printStationID() {
+        std::cout << "Station ID: ";
+        printStationIDImpl();
+    }
+
+protected:
+    virtual void printStationIDImpl() = 0;
+};
+
 template<typename T>
-class Station {
+class Station : public StationBase {
 private:
     T stationID;
     int max_platforms;
@@ -83,22 +107,27 @@ public:
         return stationID;
     }
 
-    void change_max_platforms(const int newSize) {
+    void printStationIDImpl() override {
+        std::cout << stationID << std::endl;
+    }
+
+    void changeMaxPlatforms(const int newSize) override {
         max_platforms = newSize;
         std::cout << "Max platforms of " << get_station() << " changed to " << max_platforms << std::endl;
     }
 
-    void addLineAndPlatform(const std::string &line_name, int platform_num) {
+    void addLineAndPlatform(const std::string &line_name, int platform_num) override {
         try {
             if (platform_num >= max_platforms) {
                 // throw std::out_of_range("Platform number out of range");
-                std::cout << "x~~~x Platform number [" << platform_num << "] higher than maximum allowed platforms [" << max_platforms << "]" << std::endl;
+                std::cout << "x~~~x Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
+                        max_platforms << "]" << std::endl;
             } else if (platform_num <= 0) {
                 // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
                 std::cout << "x~~x Platform number [" << platform_num << "] cannot be negative" << std::endl;
             } else {
                 // std::cout << "Adding Line [" << line_name << "] with Platform number [" << platform_num << "]" <<
-                        // std::endl;
+                // std::endl;
                 const auto new_platform = std::make_shared<Platform>(platform_num);
                 platforms.push_back(new_platform);
                 this->lines.emplace_back(line_name, new_platform);
@@ -108,9 +137,9 @@ public:
         }
     }
 
-    void addTrain(int platform_no, int time, bool isThrough) {
+    void addTrain(int platform_no, int time, bool isThrough) override {
         try {
-            for (const auto& platform: platforms) {
+            for (const auto &platform: platforms) {
                 if (platform->get_platform() == platform_no) {
                     platform->addTrain(time, isThrough);
                     return;
@@ -118,13 +147,12 @@ public:
             }
             // throw std::out_of_range("Platform number out of range");
             std::cout << "Platform [" << platform_no << "] does not exist on the station" << std::endl;
-        }
-        catch (std::exception &e) {
+        } catch (std::exception &e) {
             std::cerr << "Error while adding train : " << e.what() << std::endl;
         }
     }
 
-    void stationStats() {
+    void stationStats() override {
         std::cout << "---------------------------------------------" << std::endl;
         std::cout << "Station Name: " << get_station() << std::endl;
         std::cout << "Platforms: " << std::endl;

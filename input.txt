@@ -1,0 +1,16 @@
+s,101,10
+s,Delhi,12
+alp,South,1
+at, 1, 100, true
+alp, NW, 2
+at, 2, 200, true
+at, 1, 120, false
+at, 1, 130, true
+at, 2, 190, false
+stat
+chs, 101
+chs, 121
+chs, Delhi
+alp, South, 3
+alp, East, 2
+stat
