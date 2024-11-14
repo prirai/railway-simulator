@@ -120,40 +120,36 @@ public:
     }
 
     void addLineAndPlatform(const std::string &line_name, int platform_num) override {
-        try {
-            if (platform_num > max_platforms) {
-                // throw std::out_of_range("Platform number out of range");
-                std::stringstream errorStream;
-                errorStream << "Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
-                        max_platforms << "]";
-                printError(errorStream.str());
-            } else if (platform_num <= 0) {
-                // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
-                std::stringstream errorStream;
-                errorStream << "Platform number should be a positive integer upto " << max_platforms;
-                printError(errorStream.str());
-            } else {
-                bool no_error = true;
+        if (platform_num > max_platforms) {
+            // throw std::out_of_range("Platform number out of range");
+            std::stringstream errorStream;
+            errorStream << "Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
+                    max_platforms << "]";
+            printError(errorStream.str());
+        } else if (platform_num <= 0) {
+            // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
+            std::stringstream errorStream;
+            errorStream << "Platform number should be a positive integer upto " << max_platforms;
+            printError(errorStream.str());
+        } else {
+            bool no_error = true;
 
-                for (auto pl: this->platforms) {
-                    // std::cout << pl->get_platform() << ", ";
-                    if (pl->get_platform() == platform_num) {
-                        std::stringstream errorStream;
-                        errorStream << "Cannot add platform " << platform_num << " which already exists.";
-                        printError(errorStream.str());
-                        no_error = false;
-                        break;
-                    }
-                    // std::cout << std::endl;
+            for (auto pl: this->platforms) {
+                // std::cout << pl->get_platform() << ", ";
+                if (pl->get_platform() == platform_num) {
+                    std::stringstream errorStream;
+                    errorStream << "Cannot add platform " << platform_num << " which already exists.";
+                    printError(errorStream.str());
+                    no_error = false;
+                    break;
                 }
-                if (no_error) {
-                    const auto new_platform = std::make_shared<Platform>(platform_num);
-                    platforms.push_back(new_platform);
-                    this->lines.emplace_back(line_name, new_platform);
-                }
+                // std::cout << std::endl;
             }
-        } catch (std::exception &e) {
-            std::cerr << "Error while trying to add line " << e.what() << std::endl;
+            if (no_error) {
+                const auto new_platform = std::make_shared<Platform>(platform_num);
+                platforms.push_back(new_platform);
+                this->lines.emplace_back(line_name, new_platform);
+            }
         }
     }
 
