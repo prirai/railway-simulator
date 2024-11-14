@@ -3,6 +3,7 @@ s,Delhi,12
 alp,South,1
 at, 1, 100, true
 alp, NW, 2
+alp, Z, z
 at, 2, 200, true
 at, 1, 120, false
 at, 1, 130, true
@@ -14,3 +15,7 @@ chs, Delhi
 alp, South, 3
 alp, East, 2
 stat
+alp, Deccan, 12
+alp, NSE, 13
+stat
+alp, Void, -2

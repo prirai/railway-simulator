@@ -46,7 +46,7 @@ void file_input() {
         // cout << cmd_ind << endl;
         switch (cmd_ind) {
             case 0: {
-                cout << "Trying to add station: " << tokens[1] << endl;
+                // cout << "Trying to add station: " << tokens[1] << endl;
                 bool isnum = is_number(tokens[1]);
                 if (isnum) {
                     int int_station = atoi(tokens[1].c_str());
@@ -67,7 +67,7 @@ void file_input() {
             case 1: {
                 string line_name = tokens[1];
                 int platform_id = atoi(tokens[2].c_str());
-                cout << "Adding platform " << platform_id << endl;
+                // cout << "Adding platform " << platform_id << endl;
                 st_ptr->addLineAndPlatform(line_name, platform_id);
             }
             break;

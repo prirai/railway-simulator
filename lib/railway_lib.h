@@ -6,6 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <memory>
+#include <iomanip>
 
 inline int MAX_LINES = 20;
 
@@ -38,8 +39,10 @@ public:
         for (const auto &sched: schedule) {
             if (haveIntersection(newtrain_sched, sched)) {
                 std::stringstream errorStream;
-                errorStream << "Cannot add train at " << newtrain_sched.first << " which is a [" << extstr <<
-                        "] train due to another train from " << sched.first << " to " << sched.second;
+                errorStream << "Cannot add train at " << std::setw(4) << std::setfill('0') << newtrain_sched.first <<
+                        " hrs which is a [" << extstr <<
+                        "] train due to another train from " << std::setw(4) << std::setfill('0') << sched.first <<
+                        " to " << std::setw(4) << std::setfill('0') << sched.second << " hrs";
                 printError(errorStream.str());
                 return;
             }
@@ -118,13 +121,17 @@ public:
 
     void addLineAndPlatform(const std::string &line_name, int platform_num) override {
         try {
-            if (platform_num >= max_platforms) {
+            if (platform_num > max_platforms) {
                 // throw std::out_of_range("Platform number out of range");
-                std::cout << "x~~~x Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
-                        max_platforms << "]" << std::endl;
+                std::stringstream errorStream;
+                errorStream << "Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
+                        max_platforms << "]";
+                printError(errorStream.str());
             } else if (platform_num <= 0) {
                 // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
-                std::cout << "x~~x Platform number [" << platform_num << "] cannot be negative" << std::endl;
+                std::stringstream errorStream;
+                errorStream << "Platform number should be a positive integer upto " << max_platforms;
+                printError(errorStream.str());
             } else {
                 bool no_error = true;
 
@@ -132,7 +139,7 @@ public:
                     // std::cout << pl->get_platform() << ", ";
                     if (pl->get_platform() == platform_num) {
                         std::stringstream errorStream;
-                        errorStream << "Cannot add platform " << platform_num << " which already exists." << std::endl;
+                        errorStream << "Cannot add platform " << platform_num << " which already exists.";
                         printError(errorStream.str());
                         no_error = false;
                         break;
@@ -151,18 +158,16 @@ public:
     }
 
     void addTrain(int platform_no, int time, bool isThrough) override {
-        try {
-            for (const auto &platform: platforms) {
-                if (platform->get_platform() == platform_no) {
-                    platform->addTrain(time, isThrough);
-                    return;
-                }
+        for (const auto &platform: platforms) {
+            if (platform->get_platform() == platform_no) {
+                platform->addTrain(time, isThrough);
+                return;
             }
-            // throw std::out_of_range("Platform number out of range");
-            std::cout << "Platform [" << platform_no << "] does not exist on the station" << std::endl;
-        } catch (std::exception &e) {
-            std::cerr << "Error while adding train : " << e.what() << std::endl;
         }
+        // throw std::out_of_range("Platform number out of range");
+        std::stringstream errorStream;
+        errorStream << "Platform [" << platform_no << "] does not exist on the station";
+        printError(errorStream.str());
     }
 
     void stationStats() override {
