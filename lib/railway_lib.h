@@ -9,6 +9,10 @@
 
 inline int MAX_LINES = 20;
 
+static void printError(const std::string &error_msg) {
+    std::cout << "\033[31mx~~~x " << error_msg << "\033[0m" << std::endl;
+}
+
 class Platform {
 private:
     int platformID;
@@ -25,10 +29,6 @@ public:
 
     static bool haveIntersection(const std::pair<int, int> &a, const std::pair<int, int> &b) {
         return std::max(a.first, b.first) <= std::min(a.second, b.second);
-    }
-
-    static void printError(const std::string &error_msg) {
-        std::cout << "\033[31mx~~~x " << error_msg << "\033[0m" << std::endl;
     }
 
     void addTrain(int time, bool isThroughTrain) {
@@ -126,11 +126,24 @@ public:
                 // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
                 std::cout << "x~~x Platform number [" << platform_num << "] cannot be negative" << std::endl;
             } else {
-                // std::cout << "Adding Line [" << line_name << "] with Platform number [" << platform_num << "]" <<
-                // std::endl;
-                const auto new_platform = std::make_shared<Platform>(platform_num);
-                platforms.push_back(new_platform);
-                this->lines.emplace_back(line_name, new_platform);
+                bool no_error = true;
+
+                for (auto pl: this->platforms) {
+                    // std::cout << pl->get_platform() << ", ";
+                    if (pl->get_platform() == platform_num) {
+                        std::stringstream errorStream;
+                        errorStream << "Cannot add platform " << platform_num << " which already exists." << std::endl;
+                        printError(errorStream.str());
+                        no_error = false;
+                        break;
+                    }
+                    // std::cout << std::endl;
+                }
+                if (no_error) {
+                    const auto new_platform = std::make_shared<Platform>(platform_num);
+                    platforms.push_back(new_platform);
+                    this->lines.emplace_back(line_name, new_platform);
+                }
             }
         } catch (std::exception &e) {
             std::cerr << "Error while trying to add line " << e.what() << std::endl;

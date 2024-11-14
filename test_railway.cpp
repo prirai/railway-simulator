@@ -67,6 +67,7 @@ void file_input() {
             case 1: {
                 string line_name = tokens[1];
                 int platform_id = atoi(tokens[2].c_str());
+                cout << "Adding platform " << platform_id << endl;
                 st_ptr->addLineAndPlatform(line_name, platform_id);
             }
             break;
