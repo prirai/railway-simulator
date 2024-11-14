@@ -171,15 +171,15 @@ public:
     }
 
     void stationStats() override {
-        std::cout << "---------------------------------------------" << std::endl;
-        std::cout << "Station Name: " << get_station() << std::endl;
+        std::cout << "\033[33m---------------------------------------------\033[0m" << std::endl;
+        std::cout << "\x1b[1;36mStation Name: " << get_station() << "\x1b[0;0m" << std::endl;
         std::cout << "Platforms: " << std::endl;
         for (int i = 0; i < platforms.size(); ++i) {
             const auto platform = platforms.at(i)->get_platform();
             const auto line = lines.at(i).getLineName();
             std::cout << platform << "\t" << line << std::endl;
         }
-        std::cout << "---------------------------------------------" << std::endl;
+        std::cout << "\033[33m---------------------------------------------\033[0m" << std::endl;
     }
 };
 #endif

@@ -95,7 +95,9 @@ void file_input() {
                         }
                     }
                     if (!st_found) {
-                        cerr << "Station not found - " << int_station << endl;
+                        std::stringstream errorStream;
+                        errorStream << "Station not found - " << int_station;
+                        printError(errorStream.str());
                     }
                 } else {
                     string str_station = tokens[1];
