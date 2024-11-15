@@ -14,10 +14,43 @@ static void printError(const std::string &error_msg) {
     std::cout << "\033[31mx~~~x " << error_msg << "\033[0m" << std::endl;
 }
 
+class Train {
+private:
+    int platformID;
+    std::pair<int, int> trainSchedule;
+    std::string extraString;
+    int coaches;
+    int passengers;
+
+public:
+    Train(int id, const std::pair<int, int> &newtrain_sched, const std::string &extstr)
+        : platformID(id), trainSchedule(newtrain_sched), extraString(extstr), coaches(0), passengers(0) {
+    }
+
+    void enrollCoaches(int numberOfCoaches) {
+        coaches += numberOfCoaches;
+        std::cout << "Enrolled " << numberOfCoaches << " coaches. Total coaches: " << coaches << std::endl;
+    }
+
+    void enrollPassengers(int numberOfPassengers) {
+        passengers += numberOfPassengers;
+        std::cout << "Enrolled " << numberOfPassengers << " passengers. Total passengers: " << passengers << std::endl;
+    }
+
+    void displayTrainInfo() const {
+        std::cout << "Platform ID: " << platformID << std::endl;
+        std::cout << "Schedule: (" << trainSchedule.first << ", " << trainSchedule.second << ")" << std::endl;
+        std::cout << "Extra String: " << extraString << std::endl;
+        std::cout << "Total Coaches: " << coaches << std::endl;
+        std::cout << "Total Passengers: " << passengers << std::endl;
+    }
+};
+
 class Platform {
 private:
     int platformID;
     std::vector<std::pair<int, int> > schedule;
+    std::vector<Train> trains;
 
 public:
     explicit Platform(const int platformID) : platformID(platformID) {
@@ -47,13 +80,16 @@ public:
                 return;
             }
         }
-        schedule.emplace_back(time, isThroughTrain ? time + 10 : time + 30); // Store 0 for through, 1 for stoppage
+        schedule.emplace_back(time, isThroughTrain ? time + 10 : time + 30);
         std::cout << "Added [" << extstr << "] train for - ["
-                << std::setw(4) << std::setfill('0') << newtrain_sched.first << " to " << std::setw(4) << std::setfill('0') << newtrain_sched.second
+                << std::setw(4) << std::setfill('0') << newtrain_sched.first << " to " << std::setw(4) <<
+                std::setfill('0') << newtrain_sched.second
                 << "] hrs on platform number [" << platformID << "]"
                 << std::endl;
 
         std::sort(schedule.begin(), schedule.end());
+        Train tr(platformID, newtrain_sched, extstr);
+        trains.emplace_back(tr);
     }
 };
 
@@ -123,13 +159,11 @@ public:
 
     void addLineAndPlatform(const std::string &line_name, int platform_num) override {
         if (platform_num > max_platforms) {
-            // throw std::out_of_range("Platform number out of range");
             std::stringstream errorStream;
             errorStream << "Platform number [" << platform_num << "] higher than maximum allowed platforms [" <<
                     max_platforms << "]";
             printError(errorStream.str());
         } else if (platform_num <= 0) {
-            // throw std::out_of_range("Platform number should be between 1 and " + std::to_string(max_platforms));
             std::stringstream errorStream;
             errorStream << "Platform number should be a positive integer upto " << max_platforms;
             printError(errorStream.str());
@@ -137,7 +171,6 @@ public:
             bool no_error = true;
 
             for (auto pl: this->platforms) {
-                // std::cout << pl->get_platform() << ", ";
                 if (pl->get_platform() == platform_num) {
                     std::stringstream errorStream;
                     errorStream << "Cannot add platform " << platform_num << " which already exists.";
@@ -145,7 +178,6 @@ public:
                     no_error = false;
                     break;
                 }
-                // std::cout << std::endl;
             }
             if (no_error) {
                 const auto new_platform = std::make_shared<Platform>(platform_num);
@@ -162,7 +194,7 @@ public:
                 return;
             }
         }
-        // throw std::out_of_range("Platform number out of range");
+
         std::stringstream errorStream;
         errorStream << "Platform [" << platform_no << "] does not exist on the station";
         printError(errorStream.str());
@@ -180,4 +212,5 @@ public:
         std::cout << "\033[33m---------------------------------------------\033[0m" << std::endl;
     }
 };
+
 #endif
