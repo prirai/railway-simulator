@@ -40,7 +40,7 @@ public:
     void displayTrainInfo() const {
         std::cout << "Platform ID: " << platformID << std::endl;
         std::cout << "Schedule: (" << trainSchedule.first << ", " << trainSchedule.second << ")" << std::endl;
-        std::cout << "Extra String: " << extraString << std::endl;
+        std::cout << "Train Type: " << extraString << std::endl;
         std::cout << "Total Coaches: " << coaches << std::endl;
         std::cout << "Total Passengers: " << passengers << std::endl;
     }
