@@ -8,6 +8,9 @@ at, 2, 200, true
 at, 1, 120, false
 at, 1, 130, true
 at, 2, 190, false
+at, 2, 220, false
+at, 2, 230, false
+at, 2, 250, true
 stat
 chs, 101
 chs, 121

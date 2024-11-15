@@ -29,7 +29,7 @@ public:
     [[nodiscard]] int get_platform() const { return platformID; }
 
     static bool haveIntersection(const std::pair<int, int> &a, const std::pair<int, int> &b) {
-        return std::max(a.first, b.first) <= std::min(a.second, b.second);
+        return std::max(a.first, b.first) < std::min(a.second, b.second);
     }
 
     void addTrain(int time, bool isThroughTrain) {
@@ -48,7 +48,9 @@ public:
             }
         }
         schedule.emplace_back(time, isThroughTrain ? time + 10 : time + 30); // Store 0 for through, 1 for stoppage
-        std::cout << "Added [" << extstr << "] train for [" << time << "] hrs on platform number [" << platformID << "]"
+        std::cout << "Added [" << extstr << "] train for - ["
+                << std::setw(4) << std::setfill('0') << newtrain_sched.first << " to " << std::setw(4) << std::setfill('0') << newtrain_sched.second
+                << "] hrs on platform number [" << platformID << "]"
                 << std::endl;
 
         std::sort(schedule.begin(), schedule.end());
