@@ -6,7 +6,9 @@ This repository contains the source files for the assignment 3A for the OOPD cou
 - Running `make` or `make all` will compile both the versions of the program, i.e `debug` meant for debugging using -g flag and `optimized` compiled using O2 flag.
 - Running `make clean` will clean up the executables.
 - The file `test_railway.cpp` contains the source of the user test program.
-- The `lib/` folder contains the header and cpp file for the train library which is compiled into a static library by the Makefile provided. 
+- The `lib/` folder contains the header and cpp file for the train library which is compiled into a static library by the Makefile provided.
+- The file `input.txt` contains the inputs as separate lines handling all major cases such as adding of stations both int and string, adding of platform and lines associated, adding of trains. The user program combined with the library are responsible for checking sanity of inputs, preliminary checks are done by the user program itself while conflict checking is done by the library.
+
 ![images/g8.png](images/g8.png)
 ## References
 
