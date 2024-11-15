@@ -9,3 +9,9 @@ This project is an assignment for the OOPD course at IIITD.
 
 ![images/g8.png](images/g8.png)
 ## References
+
+- [ANSI Escape Sequences](https://prirai.github.io/blogs/ansi-esc/)
+- [Smart Pointers](https://en.cppreference.com/book/intro/smart_pointers)
+- [Weak Pointer](https://en.cppreference.com/w/cpp/memory/weak_ptr )
+- [fstream](https://cplusplus.com/reference/fstream/fstream)
+- [vector](https://cplusplus.com/reference/vector/vector)
