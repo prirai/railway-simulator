@@ -7,4 +7,5 @@ This project is an assignment for the OOPD course at IIITD.
 - Running `make clean` will clean up the executables.
 - The file `test_railway.cpp` contains the source of the user test program.
 
+![images/g8.png](images/g8.png)
 ## References
