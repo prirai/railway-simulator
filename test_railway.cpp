@@ -48,20 +48,31 @@ void file_input() {
             case 0: {
                 // cout << "Trying to add station: " << tokens[1] << endl;
                 bool isnum = is_number(tokens[1]);
+                bool errorocc = true;
                 if (isnum) {
                     int int_station = atoi(tokens[1].c_str());
+                    if(is_number(tokens[2].c_str()) && atoi(tokens[2].c_str()) > 0) {
                     auto *temp_st = new Station<int>(int_station, atoi(tokens[2].c_str()));
                     int_stations.push_back(*temp_st);
                     str_station = 0;
                     station_index = int_stations.size() - 1;
                     st_ptr = &int_stations[station_index];
+                    errorocc = false;} 
                 } else {
+                	if(is_number(tokens[2].c_str()) && atoi(tokens[2].c_str()) > 0) {
                     Station<string> *temp_st = new Station<string>(tokens[1], atoi(tokens[2].c_str()));
                     str_stations.push_back(*temp_st);
                     str_station = 1;
                     station_index = str_stations.size() - 1;
                     st_ptr = &str_stations[station_index];
+                    errorocc = false;}
                 }
+                if(errorocc) {
+                	std::stringstream errorStream; 
+                	errorStream << "Number of platforms [" << tokens[2] << "] should be a positive integer";
+                	printError(errorStream.str());
+                	continue;
+                	} 
             }
             break;
             case 1: {
@@ -73,9 +84,16 @@ void file_input() {
             break;
             case 2: {
                 int platform_id = atoi(tokens[1].c_str());
-                int time = atoi(tokens[2].c_str());
-                bool is_through = (tokens[3].c_str() == "true") ? true : false;
-                st_ptr->addTrain(platform_id, time, is_through);
+                string time = tokens[2].c_str();
+                int time_int = atoi(tokens[2].c_str());
+                if (is_number(time) && time_int >= 0 && time_int < 2400) {
+                    bool is_through = (tokens[3].c_str() == "true") ? true : false;
+                    st_ptr->addTrain(platform_id, time_int, is_through);}
+                    else {
+                    	std::stringstream errorStream;
+                    	errorStream << "Time entered [" << tokens[2] << "] is invalid and should be between 0000 and 2400 hrs."; 
+                    	printError(errorStream.str());
+                    	}
             }
             break;
             case 3: {
