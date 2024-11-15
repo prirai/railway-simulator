@@ -19,3 +19,6 @@ alp, Deccan, 12
 alp, NSE, 13
 stat
 alp, Void, -2
+at, 2, 2500, true
+at, 1, haha, true
+at, 11, 1300, true
