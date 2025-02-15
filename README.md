@@ -1,6 +1,6 @@
-# oopd-a3
+# Simple Railway Simulator in C++
 
-This repository contains the source files for the assignment 3A for the OOPD course at IIITD.
+See example run in the image attached below.
 
 ## Instructions for running
 - Running `make` or `make all` will compile both the versions of the program, i.e `debug` meant for debugging using -g flag and `optimized` compiled using O2 flag.
